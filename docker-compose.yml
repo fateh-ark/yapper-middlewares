@@ -1,0 +1,60 @@
+name: yapper-middleware
+
+networks:
+  keycloak-net:
+
+volumes:
+  keycloak_data: {}
+
+services:
+  keycloak:
+    image: keycloak/keycloak:latest
+    networks:
+      - keycloak-net
+    ports:
+      - "8180:8080"
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/${KEYCLOAK_PG_DATABASE:-keycloak}
+      KC_DB_USER: ${KEYCLOAK_PG_USER:-keycloak}
+      KC_DB_PASSWORD: ${KEYCLOAK_PG_PASSWORD:-123keycloak}
+      KC_HOSTNAME_PORT: 8080
+      KEYCLOAK_ADMIN: ${KEYCLOAK_USER:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD:-admin}
+    command: ${KEYCLOAK_START_COMMAND:-start-dev}
+    restart: on-failure
+    depends_on : 
+      - keycloak-db
+    env_file:
+      - path: /config
+        required: false
+
+  keycloak-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ${KEYCLOAK_PG_DATABASE:-keycloak}
+      POSTGRES_USER: ${KEYCLOAK_PG_USER:-keycloak}
+      POSTGRES_PASSWORD: ${KEYCLOAK_PG_PASSWORD:-123keycloak}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-d",
+          "${KEYCLOAK_PG_DATABASE:-keycloak}",
+          "-U",
+          "${KEYCLOAK_PG_USER:-keycloak}"
+        ]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    restart: on-failure
+    stdin_open: true
+    tty: true
+    networks:
+      - keycloak-net
+    volumes:
+      - keycloak_data:/var/lib/postgresql/data
+    env_file:
+      - path: /config
+        required: false
