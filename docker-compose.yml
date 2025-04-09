@@ -53,6 +53,8 @@ services:
     tty: true
     networks:
       - keycloak-net
+    ports:
+      - "5432:5432"
     volumes:
       - keycloak_data:/var/lib/postgresql/data
     env_file:

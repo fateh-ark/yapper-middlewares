@@ -7,7 +7,7 @@
 
 <a href="https://github.com/fateh-ark/yapper-frontend">Frontend</a> |
 <a href="">Observability Stack</a><br>
-<a href="">User Service</a> |
+<a href="https://github.com/fateh-ark/yapper-user-service">User Service</a> |
 <a href="">Post Service</a> |
 <a href="">Feed Service</a><br>
 <b>Middlewares</b>
@@ -18,11 +18,13 @@
 
 # ![repo icon](media/repo-icon.png) Yapper Middlewares
 
-[insert C4 Diagram with highlighted services here]
+![C2 Model Highlighted](media/c2-model.png)
 
 This repository contains middlewares and other software used by the Yapper! system. These are as follows:
 
-- Lorem Ipsum
+- NGINX (API Gateway)
+- Keycloak (Auth Server)
+- RabbitMQ (Message Bus)
 
 #### Relevant Documentations
 
