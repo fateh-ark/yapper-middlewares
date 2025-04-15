@@ -3,7 +3,8 @@ name: yapper-middleware
 networks:
   yapper-keycloak-net:
   yapper-message-bus-net:
-    name: message-bus-net
+    name: yapper-message-bus-net
+    driver: bridge
 
 volumes:
   keycloak_data: {}
@@ -12,7 +13,7 @@ services:
   keycloak:
     image: keycloak/keycloak:latest
     networks:
-      - keycloak-net
+      - yapper-keycloak-net
     ports:
       - "8180:8080"
     environment:
@@ -54,9 +55,9 @@ services:
     stdin_open: true
     tty: true
     networks:
-      - keycloak-net
-    ports:
-      - "5432:5432"
+      - yapper-keycloak-net
+    # ports:
+    #   - "5432:5432"
     volumes:
       - keycloak_data:/var/lib/postgresql/data
     env_file:
@@ -65,8 +66,21 @@ services:
 
   rabbitmq:
     image: rabbitmq:4.0-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+    volumes:
+      - ./definitions.json:/etc/rabbitmq/definitions.json
+    environment:
+      RABBITMQ_CONFIG_FILE: /etc/rabbitmq/rabbitmq.conf
+      RABBITMQ_LOAD_DEFINITIONS: /etc/rabbitmq/definitions.json
+      RABBITMQ_PORT_NUMBER: 5672
+    # ports:
+    #   - "5672:5672"
+    #   - "15672:15672"
     networks:
-      - message-bus-net
+      - yapper-message-bus-net
+
+  log-consumer:
+    build: ./log-consumer
+    networks:
+      - yapper-message-bus-net
+    depends_on:
+      - rabbitmq
