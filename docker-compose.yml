@@ -1,7 +1,9 @@
 name: yapper-middleware
 
 networks:
-  keycloak-net:
+  yapper-keycloak-net:
+  yapper-message-bus-net:
+    name: message-bus-net
 
 volumes:
   keycloak_data: {}
@@ -60,3 +62,11 @@ services:
     env_file:
       - path: /config
         required: false
+
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - message-bus-net
