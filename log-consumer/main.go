@@ -50,7 +50,7 @@ func main() {
 
 	err = rabbitChan.QueueBind(
 		queue.Name,    // Queue name
-		"*",           // Routing key pattern (e.g., "book.created", "book.updated")
+		"user.*",      // Routing key pattern (e.g., "book.created", "book.updated")
 		"service_log", // Exchange
 		false,         // No-wait
 		nil,           // Arguments
